@@ -67,7 +67,7 @@ Ouvrez le fichier `dvc.yaml` qui a été créé/modifié. Il devrait contenir le
 ## 4 - Commiter la Définition du Pipeline
 Ajoutez `dvc.yaml` et les scripts Python (s'ils sont nouveaux ou modifiés) à Git et commitez. Ajoutez également les nouveaux .gitignore créés par DVC pour les sorties (`data/prepared/`, `models/`).
 ```bash
-git add dvc.yaml params.yaml src/ data/.gitignore models/.gitignore
+git add dvc.yaml params.yaml src/ data/.gitignore
 git commit -m "Define prepare and train pipeline stages"
 ```
 
