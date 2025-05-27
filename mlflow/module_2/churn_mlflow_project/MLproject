@@ -1,0 +1,15 @@
+name: Churn Classifier Project
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      C: {type: float, default: 1.0}
+      n_estimators: {type: int, default: 100}
+      max_depth: {type: int, default: 3}
+      model_type: {type: string, default: "logistic"} 
+      data_path: {type: path, default: "data/churn_data_2025_03.csv"} 
+      test_size: {type: float, default: 0.2}
+      random_state: {type: int, default: 42}
+    command: "python train.py --C {C} --n_estimators {n_estimators} --max_depth {max_depth} --model_type {model_type} --data_path {data_path} --test_size {test_size} --random_state {random_state}" 
