@@ -68,7 +68,7 @@ def train_model(
     with mlflow.start_run() as run:
         model = RandomForestClassifier(n_estimators=5, max_depth=2, random_state=42)
         model.fit(x_train_df, y_train_df)
-        mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model", registered_model_name=model_name)
 
     run_id = run.info.run_id
     model_version = client.create_model_version(
