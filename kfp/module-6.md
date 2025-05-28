@@ -21,6 +21,19 @@ Ce composant sera responsable du chargement des données, de leur division en en
 - Le composant prendra un `test_size_ratio: float` en entrée.
 - Il sortira quatre artefacts de type 'Dataset' : `x_train`, `y_train`, `x_test`, `y_test`. Ces `dsl.Dataset` pointeront vers des fichiers (par exemple, CSV) contenant les données.
 
+```python
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+
+    df = pd.read_csv(dataset_uri)
+    x_train_df, x_test_df, y_train_df, y_test_df = train_test_split(
+        df.drop(columns=["Churn"]),
+        df["Churn"],
+        test_size=test_size_ratio,
+        random_state=42,
+    )
+```
+
 Un workflow ML typique (charger, prétraiter, entraîner, évaluer, inférer)  se traduit naturellement en une séquence de composants KFP. Cela renforce l'idée que KFP est un outil pour structurer et automatiser ces étapes standard.
 
 
