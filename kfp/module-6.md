@@ -65,6 +65,46 @@ Ce composant prendra les données d'entraînement, entraînera un classifieur si
    - Sortie Python (recommandée) : L'URI du modèle MLflow (str) pour faciliter son utilisation par les étapes suivantes.
 
 Lors de l'utilisation de MLflow, le modèle devient principalement un "artefact MLflow" stocké via `mlflow.sklearn.log_model` dans le backend d'artefacts de MLflow. Bien que l'on puisse aussi sortir le modèle comme un artefact KFP standard , la source de vérité pour le modèle devient MLflow, surtout si l'on utilise ensuite le registre MLflow.
+Exemple :
+```python
+   import mlflow
+   import pandas as pd
+   from mlflow.tracking import MlflowClient
+   from sklearn.metrics import accuracy_score
+   from sklearn.ensemble import RandomForestClassifier
+
+   client = MlflowClient(tracking_uri=mlflow_tracking_uri)
+   mlflow.set_tracking_uri(mlflow_tracking_uri)
+   mlflow.set_experiment(mlflow_experiment_name)
+
+   x_train_df = pd.read_csv(x_train.path)
+   y_train_df = pd.read_csv(y_train.path)
+   x_test_df = pd.read_csv(x_test.path)
+   y_test_df = pd.read_csv(y_test.path)
+
+   with mlflow.start_run() as run:
+      model = RandomForestClassifier(n_estimators=5, max_depth=2, random_state=42)
+      model.fit(x_train_df, y_train_df)
+      mlflow.sklearn.log_model(model, "model")
+
+   run_id = run.info.run_id
+   model_version = client.create_model_version(
+      name=model_name,
+      source=f"runs:/{run_id}/model",
+      run_id=run_id,
+      description="Model version created from run",
+   )
+
+   client.set_registered_model_alias(
+      model_name, "candidate-latest", model_version.version
+   )
+
+   client.set_model_version_tag(model_name, model_version.version, "validation_status", "pending")
+
+   accuracy = accuracy_score(y_test_df, model.predict(x_test_df))
+   metrics.log_metric("accuracy", accuracy)
+```
+
 
 ### 2.2 - Assembler et exécuter la pipeline d'entraînement complète
 
