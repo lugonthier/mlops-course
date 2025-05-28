@@ -66,6 +66,20 @@ Lors de l'utilisation de MLflow, le modèle devient principalement un "artefact 
 3. Compilez et exécutez cette pipeline sur votre backend KFP.
 4. Vérifiez l'UI MLflow : Vous devriez voir une nouvelle expérience, un nouveau run, avec les paramètres, métriques et le modèle enregistrés.
 
+Utiliser MLflow instance:
+```python
+   compiler.Compiler().compile(
+      training_pipeline,
+      PIPELINE_PACKAGE_PATH,
+      pipeline_parameters={
+         "churn_dataset_uri": "gs://churn-datasets-mlops-training/churn_data_2025_03.csv",
+         "mlflow_tracking_uri": "https://mlflow-server-instance-ezxhpzskva-od.a.run.app",
+         "mlflow_experiment_name": "",
+         "model_name": "",
+      },
+   )
+```
+
 ## 3 - Construction et Exécution de la Pipeline d'Inférence
 
 Passer l'URI MLflow (soit l'URI du run, soit l'URI du modèle enregistré) du composant d'entraînement au composant d'inférence est la méthode la plus directe et robuste pour assurer la lignée du modèle.
