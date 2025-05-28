@@ -57,6 +57,26 @@ Pour illustrer l'évaluation de la qualité d'un modèle de classification, nous
 3.  **Générer les prédictions** :
     Ajoutez les prédictions du modèle (probabilités pour la classe positive) aux deux DataFrames.
 
+```python
+TARGET_COLUMN = "target"
+PREDICTION_COLUMN = "prediction"
+SAVE_TO_HTML = True
+
+bcancer_data = datasets.load_breast_cancer(as_frame=True)
+bcancer_df = bcancer_data.frame
+feature_names = bcancer_data.feature_names.tolist()
+
+
+bcancer_ref = bcancer_df.sample(n=300, random_state=42)
+
+bcancer_cur = bcancer_df.drop(bcancer_ref.index).sample(n=200, random_state=42)
+
+model = ensemble.RandomForestClassifier(random_state=1, n_estimators=5, max_depth=3)
+model.fit(bcancer_ref[feature_names], bcancer_ref[TARGET_COLUMN])
+
+bcancer_ref[PREDICTION_COLUMN] = model.predict_proba(bcancer_ref[feature_names])[:, 1]
+bcancer_cur[PREDICTION_COLUMN] = model.predict_proba(bcancer_cur[feature_names])[:, 1]
+```
 ## 1.4 - Évaluation de la Qualité d'un Modèle de Classification
 
 Maintenant que nos données sont prêtes et que notre modèle a fait des prédictions, nous pouvons utiliser Evidently pour évaluer sa qualité.
@@ -123,4 +143,13 @@ feature_names = housing_data.feature_names
 
 housing_ref = housing_df.sample(n=5000, random_state=42)
 housing_cur = housing_df.drop(housing_ref.index).sample(n=5000, random_state=123)
+
+np.random.seed(42) 
+
+housing_ref[PREDICTION_COLUMN] = housing_ref[TARGET_COLUMN].values + np.random.normal(0, 0.5, housing_ref.shape[0])
+
+housing_cur[PREDICTION_COLUMN] = housing_cur[TARGET_COLUMN].values + np.random.normal(0.1, 0.6, housing_cur.shape[0])
+
+housing_ref.sort_index(inplace=True)
+housing_cur.sort_index(inplace=True)
 ```
