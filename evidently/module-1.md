@@ -110,3 +110,17 @@ Maintenant que nos données sont prêtes et que notre modèle a fait des prédic
 ## 1.5 - Préparation des Données et Entraînement d'un Modèle (Exemple Régression)
 
 Nous allons maintenant passer à un exemple de régression en utilisant le jeu de données "California Housing".
+
+```python
+from sklearn import datasets
+TARGET_COLUMN = 'target'
+PREDICTION_COLUMN = 'prediction'
+
+housing_data = datasets.fetch_california_housing(as_frame=True)
+housing_df = housing_data.frame
+housing_df.rename(columns={'MedHouseVal': TARGET_COLUMN}, inplace=True)
+feature_names = housing_data.feature_names
+
+housing_ref = housing_df.sample(n=5000, random_state=42)
+housing_cur = housing_df.drop(housing_ref.index).sample(n=5000, random_state=123)
+```
