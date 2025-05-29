@@ -32,7 +32,7 @@ spec:
     model:
       modelFormat:
         name: sklearn
-      storageUri: s3://your-bucket/path/to/your/churn-model.joblib 
+      storageUri: gs://model-registry-mlops-formation/model.pkl 
       runtime: kserve-sklearnserver 
 ```
 
@@ -50,7 +50,7 @@ spec:
     model:
       modelFormat:
         name: sklearn # KServe will look for a runtime supporting sklearn
-      storageUri: s3://your-bucket/path/to/your/churn-model.joblib
+      storageUri: gs://model-registry-mlops-formation/model.pkl
 ```
 
 **Note:** For your churn prediction model, you will need to:
