@@ -32,7 +32,7 @@ spec:
     model:
       modelFormat:
         name: sklearn
-      storageUri: gs://model-registry-mlops-formation/model.pkl 
+      storageUri: gs://model-registry-mlops-formation/model
       runtime: kserve-sklearnserver 
 ```
 
@@ -50,7 +50,7 @@ spec:
     model:
       modelFormat:
         name: sklearn # KServe will look for a runtime supporting sklearn
-      storageUri: gs://model-registry-mlops-formation/model.pkl
+      storageUri: gs://model-registry-mlops-formation/model
 ```
 
 **Note:** For your churn prediction model, you will need to:
