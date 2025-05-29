@@ -1,3 +1,5 @@
+import google.cloud.aiplatform as aip
+
 from kfp import dsl, compiler
 
 
@@ -51,7 +53,8 @@ def data_quality(
     reference_features: dsl.Input[dsl.Dataset],
     current_features: dsl.Input[dsl.Dataset],
     report: dsl.Output[dsl.HTML],
-
+    workspace: str,
+    project_id: str,
 ):
     import pandas as pd
     from datetime import datetime
@@ -59,11 +62,15 @@ def data_quality(
     from evidently.ui.remote import RemoteWorkspace
     from evidently.test_preset import DataStabilityTestPreset
 
+    ws = RemoteWorkspace(workspace)
+    project = ws.get_project(project_id)
+
     reference_df = pd.read_csv(reference_features.path)
     current_df = pd.read_csv(current_features.path)
     test_suite = TestSuite(tests=[DataStabilityTestPreset()], timestamp=datetime.now(), tags=["data_quality_test_suite"])
     test_suite.run(reference_data=reference_df, current_data=current_df)
-    test_suite.save(report.path)
+    ws.add_test_suite(project.id, test_suite)
+
 
 @dsl.component(
     base_image="python:3.12", packages_to_install=["pandas", "evidently==0.6.6"]
@@ -72,14 +79,19 @@ def data_drift(
     reference_features: dsl.Input[dsl.Dataset],
     current_features: dsl.Input[dsl.Dataset],
     report: dsl.Output[dsl.HTML],
-
+    workspace: str,
+    project_id: str,
 ):
     import pandas as pd
     from datetime import datetime
     from evidently.report import Report
     from evidently.test_suite import TestSuite
+    from evidently.ui.remote import RemoteWorkspace
     from evidently.metrics import DatasetDriftMetric
     from evidently.test_preset import DataDriftTestPreset
+    
+    ws = RemoteWorkspace(workspace)
+    project = ws.get_project(project_id)
 
     reference_df = pd.read_csv(reference_features.path)
     current_df = pd.read_csv(current_features.path)
@@ -93,7 +105,8 @@ def data_drift(
     
     test_suite.run(reference_data=reference_df, current_data=current_df)
     report.run(reference_data=reference_df, current_data=current_df)
-    test_suite.save(report.path)
+    ws.add_test_suite(project.id, test_suite)
+    ws.add_report(project.id, report)
 
 
 @dsl.component(
@@ -103,13 +116,17 @@ def prediction_drift(
     reference_target: dsl.Input[dsl.Dataset],
     current_target: dsl.Input[dsl.Dataset],
     drift_report: dsl.Output[dsl.HTML],
-
+    workspace: str,
+    project_id: str,
 ):
     import pandas as pd
     from datetime import datetime
     from evidently.report import Report
     from evidently.metrics import ColumnDriftMetric
+    from evidently.ui.remote import RemoteWorkspace
 
+    ws = RemoteWorkspace(workspace)
+    project = ws.get_project(project_id)
 
     reference_df = pd.read_csv(reference_target.path)
     current_df = pd.read_csv(current_target.path)
@@ -117,7 +134,8 @@ def prediction_drift(
         metrics=[ColumnDriftMetric(column_name="prediction")], timestamp=datetime.now(), tags=["prediction_drift"]
     )
     report.run(reference_data=reference_df, current_data=current_df)
-    report.save(drift_report.path)
+    ws.add_report(project.id, report)
+
 
 @dsl.component(
     base_image="python:3.12", packages_to_install=["pandas", "evidently==0.6.6"]
@@ -205,8 +223,8 @@ if __name__ == "__main__":
             "model_name": "ChurnPrediction",
             "tracking_uri": "https://mlflow-server-instance-ezxhpzskva-od.a.run.app",
             "reference_dataset_uri": "gs://churn-datasets-mlops-training/churn_data_2025_03.csv",
-            # "workspace": "https://evidently-server-instance-988498511057.europe-west9.run.app",
-            # "project_id": "01971bcb-7cfc-7619-be16-58ac37370ed4",
+            "workspace": "https://evidently-server-instance-988498511057.europe-west9.run.app",
+            "project_id": "0196e500-b22a-7ee1-b479-9fbedbf78c8d",
         },
     )
     KFP_URL = "http://mrrwaapi.com/pipeline"
