@@ -23,7 +23,7 @@ You'll need to write a Python class that inherits from `kserve.Model` and implem
 ```python
 from typing import Dict
 from kserve import Model, ModelServer, InferRequest, InferResponse
-
+from kserve.utils.utils import get_predict_input, generate_uuid
 class MyCustomModel(Model):
     def __init__(self, name: str):
        super().__init__(name)
@@ -42,6 +42,7 @@ class MyCustomModel(Model):
         #    raw_data = payload # if using raw request bytes
         #    deserialized_data = self.decode_request(payload) # if using kserve.InferInput
         #    input_data = [infer_input.data for infer_input in payload.inputs if infer_input.name == "your_input_name"]
+        # Also with InferRequest: input_features = get_predict_input(payload)
 
         # 2. Perform inference using self.model
         #    predictions = self.model.predict(processed_input)
