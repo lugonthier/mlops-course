@@ -1,0 +1,14 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: churn-predict
+spec:
+  predictor:
+    containers:
+      - name: kserve-container
+        image: docker.io/lugonthil/churn-predictor
+        env:
+          - name: MODEL_NAME
+            value: ChurnPrediction
+          - name: MLFLOW_TRACKING_URI
+            value: https://mlflow-server-instance-ezxhpzskva-od.a.run.app
