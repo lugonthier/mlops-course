@@ -2,6 +2,11 @@
 
 This module explores how to create your own custom serving runtime if KServe's prebuilt runtimes are not suitable for your needs. This is useful when you have complex preprocessing/postprocessing, specific dependencies, or require particular optimizations.
 
+## 0. Install KServe SDK
+```bash
+pip install kserve==0.12.0
+```
+
 ## 1. Implement Your Custom Model Server
 
 You'll need to write a Python class that inherits from `kserve.Model` and implements at least the `load` and `predict` methods.
