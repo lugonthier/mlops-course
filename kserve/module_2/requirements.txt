@@ -1,0 +1,4 @@
+mlflow==2.22.0
+mlserver==1.7.0
+mlserver-mlflow==1.7.0
+kserve==0.15.1
